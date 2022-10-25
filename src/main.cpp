@@ -11,6 +11,15 @@ main()
         list_push(&list, 2, 1);
         list_push(&list, 3, 2);
         list_push(&list, 4, 3);
+        list_push(&list, 4, 4);
+        list_push(&list, 4, 5);
+        list_push(&list, 4, 6);
+        list_push(&list, 4, 7);
+        list_push(&list, 4, 8);
+        list_push(&list, 4, 9);
+        list_push(&list, 4, 10);
+
+        list_resize(&list, 20);
 
         list_dump(list);
 

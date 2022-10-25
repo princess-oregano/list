@@ -40,11 +40,11 @@ void
 list_ctor(list_t *list, int cap)
 {
         data_t *data_ptr = nullptr;
-        if ((data_ptr = (data_t *) calloc((size_t) cap, 
+        if ((data_ptr = (data_t *) calloc((size_t) cap + 1, 
                                    sizeof(data_t))) == nullptr)
                 fprintf(stderr, "Couln't allocate memory.\n");
 
-        for (int i = 0; i < cap; i++) {
+        for (int i = 1; i < cap + 1; i++) {
                 data_ptr[i].next = i + 1;
                 data_ptr[i].prev = -1;
                 memset(&data_ptr[i].elem, ELEM_POISON, sizeof(elem_t));
@@ -52,17 +52,18 @@ list_ctor(list_t *list, int cap)
 
         data_ptr[0].next = 0;
         data_ptr[0].prev = 0;
+        memset(&data_ptr[0].elem, ELEM_POISON, sizeof(elem_t));
 
         list->data = data_ptr;
 
-        list->tail = cap;
+        list->tail = cap + 1;
         list->free = 1;
 }
 
 void
 list_push(list_t *list, elem_t elem, int pos)
 {
-        if (pos <= 0) {
+        if (pos <= 0 || pos > list->tail) {
                 fprintf(stderr, "Invalid position.\n");
                 return;
         }
@@ -98,15 +99,22 @@ list_remove(list_t *list, int num)
 void
 list_resize(list_t *list, int new_cap)
 {
-        data_t *data_ptr = (data_t *) realloc(list->data, (size_t) new_cap);
+        data_t *data_ptr = nullptr;
+        if ((data_ptr = (data_t *) realloc(list->data, 
+                        ((size_t) new_cap + 1) * sizeof(data_t))) == nullptr) {
+                fprintf(stderr, "Couldn't allocate memory for list.data.\n");
+                return;
+        }
+
+        for (int i = list->tail; i < new_cap + 1; i++) {
+                data_ptr[i].next = i + 1;
+                data_ptr[i].prev = -1;
+                memset(&data_ptr[i].elem, ELEM_POISON, sizeof(elem_t));
+        }
 
         list->data = data_ptr;
 
-        for (int i = list->tail; i < new_cap; i++) {
-                data_ptr[i].next = i + 1;
-        }
-
-        list->tail = new_cap;
+        list->tail = new_cap + 1;
 }
 
 void
