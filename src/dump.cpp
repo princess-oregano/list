@@ -75,7 +75,7 @@ make_graph_dump(const list_t *list)
 
         for(i = 0; i < list->cap; i++) {
                 fprintf(STREAM,
-                "node%d -> node%d [weight = 0, color=BLEU];\n", i, list->elem[i].prev);
+                "node%d -> node%d [weight = 0, color=blue];\n", i, list->elem[i].prev);
         }
 
         fprintf(STREAM, "}\n");
