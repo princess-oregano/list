@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include "list.h"
 
-// Opens file to dump to.
+// Writes a graphviz interpretation of dump to a file.
 void
-open_dump(const char *filename);
+make_graph_dump(const list_t *list);
 // List dump.
 void
 list_dump(const list_t *list);

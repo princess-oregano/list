@@ -43,8 +43,6 @@ list_ctor(list_t *list, int cap)
 void
 list_insert(list_t *list, data_t data, int pos)
 {
-        list_dump(list);
-
         if (pos < 0 || pos > list->cap) {
                 fprintf(stderr, "Invalid position.\n");
                 return;
@@ -73,8 +71,6 @@ list_remove(list_t *list, int pos)
         list->elem[pos].prev = -1;
 
         list->free = pos;
-
-        list_dump(list);
 }
 
 void

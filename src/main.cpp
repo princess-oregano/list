@@ -6,8 +6,6 @@ main()
 {
         list_t list {};
 
-        open_dump("dump.txt");
-
         list_ctor(&list, 10);
 
         list_insert(&list, 2, 0);
@@ -22,7 +20,7 @@ main()
         list_insert(&list, 4, 7);
         list_insert(&list, 4, 8);
 
-        list_dump(&list);
+        make_graph_dump(&list);
 
         list_dtor(&list);
 
