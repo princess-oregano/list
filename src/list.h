@@ -37,9 +37,6 @@ list_dtor(list_t *list);
 // Checks condition of list.
 void
 list_verify(list_t list);
-// List dump.
-void
-list_dump(const list_t *list, FILE *stream);
 
 #endif // LIST_H
 

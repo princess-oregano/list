@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include "list.h"
-
+#include "dump.h"
 int
 main()
 {
         list_t list {};
+
+        open_dump("dump.txt");
 
         list_ctor(&list, 10);
 
@@ -20,7 +22,7 @@ main()
         list_insert(&list, 4, 7);
         list_insert(&list, 4, 8);
 
-        list_dump(&list, stderr);
+        list_dump(&list);
 
         list_dtor(&list);
 

@@ -2,38 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "list.h"
-
-void
-list_dump(const list_t *list, FILE *stream)
-{
-        fprintf(stream, "------------------DUMP---------------------------\n");
-        fprintf(stream, "Free: %d\n", list->free);
-
-        fprintf(stream, "Index: ");
-        for (int i = 0; i <= list->cap; i++) {
-                fprintf(stream, "%2d ", i);
-        }
-        fprintf(stream, "\n");
-
-        fprintf(stream, "Data:  ");
-        for (int i = 0; i <= list->cap; i++) {
-                fprintf(stream, "%2d ", list->elem[i].data);
-        }
-        fprintf(stream, "\n");
-
-        fprintf(stream, "Next:  ");
-        for (int i = 0; i <= list->cap; i++) {
-                fprintf(stream, "%2d ", list->elem[i].next);
-        }
-        fprintf(stream, "\n");
-
-        fprintf(stream, "Prev:  ");
-        for (int i = 0; i <= list->cap; i++) {
-                fprintf(stream, "%2d ", list->elem[i].prev);
-        }
-        fprintf(stream, "\n");
-        fprintf(stream, "---------------END OF DUMP-----------------------\n");
-}
+#include "dump.h"
 
 void
 list_resize(list_t *list, int new_cap)
@@ -74,7 +43,7 @@ list_ctor(list_t *list, int cap)
 void
 list_insert(list_t *list, data_t data, int pos)
 {
-        list_dump(list, stderr);
+        list_dump(list);
 
         if (pos < 0 || pos > list->cap) {
                 fprintf(stderr, "Invalid position.\n");
@@ -105,7 +74,7 @@ list_remove(list_t *list, int pos)
 
         list->free = pos;
 
-        list_dump(list, stderr);
+        list_dump(list);
 }
 
 void
