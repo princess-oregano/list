@@ -7,29 +7,28 @@ void
 list_dump(const list_t *list, FILE *stream)
 {
         fprintf(stream, "------------------DUMP---------------------------\n");
-        fprintf(stream, "Tail: %d\n", list->tail);
         fprintf(stream, "Free: %d\n", list->free);
 
         fprintf(stream, "Index: ");
-        for (int i = 0; i < list->cap; i++) {
+        for (int i = 0; i <= list->cap; i++) {
                 fprintf(stream, "%2d ", i);
         }
         fprintf(stream, "\n");
 
-        fprintf(stream, "Elem:  ");
-        for (int i = 0; i < list->cap; i++) {
+        fprintf(stream, "Data:  ");
+        for (int i = 0; i <= list->cap; i++) {
                 fprintf(stream, "%2d ", list->elem[i].data);
         }
         fprintf(stream, "\n");
 
         fprintf(stream, "Next:  ");
-        for (int i = 0; i < list->cap; i++) {
+        for (int i = 0; i <= list->cap; i++) {
                 fprintf(stream, "%2d ", list->elem[i].next);
         }
         fprintf(stream, "\n");
 
         fprintf(stream, "Prev:  ");
-        for (int i = 0; i < list->cap; i++) {
+        for (int i = 0; i <= list->cap; i++) {
                 fprintf(stream, "%2d ", list->elem[i].prev);
         }
         fprintf(stream, "\n");
@@ -53,6 +52,8 @@ list_resize(list_t *list, int new_cap)
                 memset(&elem_ptr[i].data, ELEM_POISON, sizeof(data_t));
         }
 
+        elem_ptr[new_cap].next = 0;
+
         list->elem = elem_ptr;
 
         list->cap = new_cap + 1;
@@ -67,7 +68,6 @@ list_ctor(list_t *list, int cap)
         list->elem[0].next = 0;
 
         list->cap = cap;
-        list->tail = 0;
         list->free = 1;
 }
 
@@ -112,7 +112,6 @@ void
 list_dtor(list_t *list)
 {
         list->cap = -1;
-        list->tail = -1;
         list->free = -1;
         if (list->elem != nullptr)
                 free(list->elem);

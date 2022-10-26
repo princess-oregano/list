@@ -16,7 +16,6 @@ struct elem_t {
 struct list_t {
         elem_t *elem = nullptr;
         int cap = 0;
-        int tail = 0;
         int free = 0;
 };
 
