@@ -4,125 +4,137 @@
 #include "list.h"
 
 void
-list_dump(list_t list)
+list_dump(const list_t *list, FILE *stream)
 {
-        printf("------------------DUMP---------------------------\n");
-        printf("Tail: %d\n", list.tail);
-        printf("Free: %d\n", list.free);
+        fprintf(stream, "------------------DUMP---------------------------\n");
+        fprintf(stream, "Tail: %d\n", list->tail);
+        fprintf(stream, "Free: %d\n", list->free);
 
-        printf("Index: ");
-        for (int i = 0; i < list.tail; i++) {
-                printf("%2d ", i);
+        fprintf(stream, "Index: ");
+        for (int i = 0; i < list->cap; i++) {
+                fprintf(stream, "%2d ", i);
         }
-        printf("\n");
+        fprintf(stream, "\n");
 
-        printf("Elem:  ");
-        for (int i = 0; i < list.tail; i++) {
-                printf("%2d ", list.data[i].elem);
+        fprintf(stream, "Elem:  ");
+        for (int i = 0; i < list->cap; i++) {
+                fprintf(stream, "%2d ", list->elem[i].data);
         }
-        printf("\n");
+        fprintf(stream, "\n");
 
-        printf("Next:  ");
-        for (int i = 0; i < list.tail; i++) {
-                printf("%2d ", list.data[i].next);
+        fprintf(stream, "Next:  ");
+        for (int i = 0; i < list->cap; i++) {
+                fprintf(stream, "%2d ", list->elem[i].next);
         }
-        printf("\n");
+        fprintf(stream, "\n");
 
-        printf("Prev:  ");
-        for (int i = 0; i < list.tail; i++) {
-                printf("%2d ", list.data[i].prev);
+        fprintf(stream, "Prev:  ");
+        for (int i = 0; i < list->cap; i++) {
+                fprintf(stream, "%2d ", list->elem[i].prev);
         }
-        printf("\n");
-        printf("---------------END OF DUMP-----------------------\n");
-}
-
-void
-list_ctor(list_t *list, int cap)
-{
-        data_t *data_ptr = nullptr;
-        if ((data_ptr = (data_t *) calloc((size_t) cap + 1, 
-                                   sizeof(data_t))) == nullptr)
-                fprintf(stderr, "Couln't allocate memory.\n");
-
-        for (int i = 1; i < cap + 1; i++) {
-                data_ptr[i].next = i + 1;
-                data_ptr[i].prev = -1;
-                memset(&data_ptr[i].elem, ELEM_POISON, sizeof(elem_t));
-        }
-
-        data_ptr[0].next = 0;
-        data_ptr[0].prev = 0;
-        memset(&data_ptr[0].elem, ELEM_POISON, sizeof(elem_t));
-
-        list->data = data_ptr;
-
-        list->tail = cap + 1;
-        list->free = 1;
-}
-
-void
-list_push(list_t *list, elem_t elem, int pos)
-{
-        if (pos <= 0 || pos > list->tail) {
-                fprintf(stderr, "Invalid position.\n");
-                return;
-        }
-
-        int index = list->free;
-        list->free = list->data[list->free].next;
-
-        list->data[index].elem = elem;
-
-        list->data[index].prev = list->data[pos].prev;
-        list->data[index].next = pos;
-
-        list->data[pos].prev = index;
-
-        if (pos == 1)
-                return;
-                
-        list->data[list->data[index].prev].next = pos;
-}
-
-void
-list_remove(list_t *list, int num)
-{
-        list->data[list->data[num].prev].next = list->data[num].next;
-        list->data[list->data[num].next].prev = list->data[num].prev;
-
-        list->data[num].next = -1;
-        list->data[num].prev = -1;
-
-        list->free = num;
+        fprintf(stream, "\n");
+        fprintf(stream, "---------------END OF DUMP-----------------------\n");
 }
 
 void
 list_resize(list_t *list, int new_cap)
 {
-        data_t *data_ptr = nullptr;
-        if ((data_ptr = (data_t *) realloc(list->data, 
-                        ((size_t) new_cap + 1) * sizeof(data_t))) == nullptr) {
-                fprintf(stderr, "Couldn't allocate memory for list.data.\n");
+        elem_t *elem_ptr = (elem_t *) realloc(list->elem, 
+                           ((size_t) new_cap + 1) * sizeof(elem_t));
+
+        if (elem_ptr == nullptr) {
+                fprintf(stderr, "Couldn't allocate memory for list.elem.\n");
                 return;
         }
 
-        for (int i = list->tail; i < new_cap + 1; i++) {
-                data_ptr[i].next = i + 1;
-                data_ptr[i].prev = -1;
-                memset(&data_ptr[i].elem, ELEM_POISON, sizeof(elem_t));
+        for (int i = list->cap; i < new_cap + 1; i++) {
+                elem_ptr[i].next = i + 1;
+                elem_ptr[i].prev = -1;
+                memset(&elem_ptr[i].data, ELEM_POISON, sizeof(data_t));
         }
 
-        list->data = data_ptr;
+        list->elem = elem_ptr;
 
-        list->tail = new_cap + 1;
+        list->cap = new_cap + 1;
+}
+
+void
+list_ctor(list_t *list, int cap)
+{
+        list_resize(list, cap);
+        
+        list->elem[0].next = 0;
+        list->elem[0].prev = 0;
+
+        list->cap = cap;
+        list->tail = 1;
+        list->free = 1;
+}
+
+void
+list_push(list_t *list, data_t data, int pos)
+{
+        list_dump(list, stderr);
+
+        if (pos <= 0 || pos > list->cap) {
+                fprintf(stderr, "Invalid position.\n");
+                return;
+        }
+
+        int index = list->free;
+        list->free = list->elem[list->free].next;
+
+        list->elem[index].data = data;
+
+        if (index == 1 && list->elem[index].prev == -1) {
+                list->elem[pos].next = 2;
+                list->elem[pos].prev = 0;
+                list->elem[pos + 1].prev = index;
+                return;
+        }
+
+        if (list->elem[pos].prev == -1) {
+                if (index == pos) {
+                        list->elem[pos].prev = pos - 1;
+                        return;
+                }
+
+                list->elem[index].next = pos;
+                list->elem[index].prev = pos - 1;
+                list->elem[pos - 1].next  = index;
+                return;
+        }
+
+        list->elem[index].prev = list->elem[pos].prev;
+        list->elem[index].next = pos;
+
+        list->elem[pos].prev = index;
+                
+        list->elem[list->elem[index].prev].next = index;
+}
+
+void
+list_remove(list_t *list, int pos)
+{
+        list->elem[list->elem[pos].prev].next = list->elem[pos].next;
+        list->elem[list->elem[pos].next].prev = list->elem[pos].prev;
+
+        memset(&list->elem[pos].data, ELEM_POISON, sizeof(elem_t));
+        list->elem[pos].next = list->free;
+        list->elem[pos].prev = -1;
+
+        list->free = pos;
+
+        list_dump(list, stderr);
 }
 
 void
 list_dtor(list_t *list)
 {
+        list->cap = -1;
         list->tail = -1;
         list->free = -1;
-        if (list->data != nullptr)
-                free(list->data);
+        if (list->elem != nullptr)
+                free(list->elem);
 }
 
