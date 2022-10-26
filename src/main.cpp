@@ -8,17 +8,17 @@ main()
 
         list_ctor(&list, 10);
 
-        list_push(&list, 2, 1);
-        list_push(&list, 3, 2);
-        list_push(&list, 4, 3);
-        list_push(&list, 4, 4);
-        list_push(&list, 4, 5);
-        list_push(&list, 4, 6);
+        list_insert(&list, 2, 0);
+        list_insert(&list, 3, 1);
+        list_insert(&list, 4, 2);
+        list_insert(&list, 4, 3);
+        list_insert(&list, 4, 4);
+        list_insert(&list, 4, 5);
         list_remove(&list, 3);
-        list_push(&list, 4, 7);
-        list_push(&list, 4, 8);
-        list_push(&list, 4, 9);
-        list_push(&list, 4, 10);
+        list_insert(&list, 4, 5);
+        list_insert(&list, 4, 6);
+        list_insert(&list, 4, 7);
+        list_insert(&list, 4, 8);
 
         list_dump(&list, stderr);
 

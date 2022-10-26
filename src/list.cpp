@@ -39,7 +39,7 @@ list_dump(const list_t *list, FILE *stream)
 void
 list_resize(list_t *list, int new_cap)
 {
-        elem_t *elem_ptr = (elem_t *) realloc(list->elem, 
+        elem_t *elem_ptr = (elem_t *) realloc(list->elem,
                            ((size_t) new_cap + 1) * sizeof(elem_t));
 
         if (elem_ptr == nullptr) {
@@ -62,21 +62,21 @@ void
 list_ctor(list_t *list, int cap)
 {
         list_resize(list, cap);
-        
-        list->elem[0].next = 0;
+
         list->elem[0].prev = 0;
+        list->elem[0].next = 0;
 
         list->cap = cap;
-        list->tail = 1;
+        list->tail = 0;
         list->free = 1;
 }
 
 void
-list_push(list_t *list, data_t data, int pos)
+list_insert(list_t *list, data_t data, int pos)
 {
         list_dump(list, stderr);
 
-        if (pos <= 0 || pos > list->cap) {
+        if (pos < 0 || pos > list->cap) {
                 fprintf(stderr, "Invalid position.\n");
                 return;
         }
@@ -86,31 +86,11 @@ list_push(list_t *list, data_t data, int pos)
 
         list->elem[index].data = data;
 
-        if (index == 1 && list->elem[index].prev == -1) {
-                list->elem[pos].next = 2;
-                list->elem[pos].prev = 0;
-                list->elem[pos + 1].prev = index;
-                return;
-        }
+        list->elem[index].prev = pos;
+        list->elem[index].next = list->elem[pos].next;
 
-        if (list->elem[pos].prev == -1) {
-                if (index == pos) {
-                        list->elem[pos].prev = pos - 1;
-                        return;
-                }
-
-                list->elem[index].next = pos;
-                list->elem[index].prev = pos - 1;
-                list->elem[pos - 1].next  = index;
-                return;
-        }
-
-        list->elem[index].prev = list->elem[pos].prev;
-        list->elem[index].next = pos;
-
-        list->elem[pos].prev = index;
-                
-        list->elem[list->elem[index].prev].next = index;
+        list->elem[pos].next = index;
+        list->elem[list->elem[index].next].prev = index;
 }
 
 void

@@ -20,26 +20,23 @@ struct list_t {
         int free = 0;
 };
 
-// Construct list. 
-void
-list_ctor(list_t *list, int cap);
-// Pushes element to list.
-void
-list_push(list_t *list, data_t data, int pos);
-// Removes element out of list.
-void
-list_remove(list_t *list, int num);
-// Removes next element out of list.
-void
-list_remove_next();
 // Resizes list.
 void
 list_resize(list_t *list, int new_cap);
+// Construct list.
+void
+list_ctor(list_t *list, int cap);
+// Inserts element to the list after position pos.
+void
+list_insert(list_t *list, data_t data, int pos);
+// Removes element out of list.
+void
+list_remove(list_t *list, int num);
 // Destroy list.
 void
 list_dtor(list_t *list);
 // Checks condition of list.
-void 
+void
 list_verify(list_t list);
 // List dump.
 void
