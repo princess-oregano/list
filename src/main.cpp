@@ -20,6 +20,8 @@ main()
         list_insert(&list, 4, 7);
         list_insert(&list, 4, 8);
 
+        printf("position of the 5th element %d\n", list_find(&list, 5));
+
         make_graph_dump(&list);
 
         list_dtor(&list);

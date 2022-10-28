@@ -60,6 +60,22 @@ list_insert(list_t *list, data_t data, int pos)
         list->elem[list->elem[index].next].prev = index;
 }
 
+int
+list_find(list_t *list, int pos)
+{
+        int index = -1;
+
+        if (pos <= 0 || pos > list->cap) {
+                fprintf(stderr, "Invalid position.\n");
+                return -1;
+        }
+        for (int i = 0; i < pos + 1; i++) {
+                index = list->elem[i].next;
+        }
+
+        return index;
+}
+
 void
 list_remove(list_t *list, int pos)
 {
