@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "list.h"
 #include "dump.h"
 
@@ -98,3 +99,26 @@ list_dtor(list_t *list)
                 free(list->elem);
 }
 
+bool
+list_verify(list_t *list)
+{
+        assert(list);
+
+        bool ret_val = true;
+
+        if (list->cap < 0) {
+                fprintf(stderr, "Invalid capacity value.\n");
+                ret_val = false;
+        }
+
+        if (list->free < 0) {
+                fprintf(stderr, "Invalid free value.\n");
+                ret_val = false;
+        }
+        if (list->elem == nullptr) {
+                fprintf(stderr, "Pointer 'elem' is null.\n");
+                ret_val = false;
+        }
+
+        return ret_val;
+}

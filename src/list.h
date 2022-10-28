@@ -39,8 +39,8 @@ list_find(list_t *list, int pos);
 void
 list_dtor(list_t *list);
 // Checks condition of list.
-void
-list_verify(list_t list);
+bool
+list_verify(list_t *list);
 
 #endif // LIST_H
 
