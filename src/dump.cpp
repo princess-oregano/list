@@ -1,11 +1,15 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <dirent.h>
 #include <errno.h>
 #include "dump.h"
 
+const int FILENAME_SIZE = 100;
+
 // Stream of dump output. By default is stderr.
 FILE *STREAM = stderr;
-FILE *GRAPH = nullptr;
+char FILENAME[FILENAME_SIZE] = {}; 
 
 // Opens file to dump to.
 static void
@@ -23,6 +27,31 @@ open_dump()
         char filename[] = "dmp/DUMP_XXXXXX";
 
         STREAM = fdopen(mkstemp(filename), "w");
+        if (strlen(filename) >= FILENAME_SIZE) {
+                fprintf(stderr, "Filename is too long.\n");
+                return;
+        }
+
+        memcpy(FILENAME, filename, strlen(filename));
+}
+
+// Genetares .png image from given dot code 
+// and removes source code.
+static void
+generate_graph()
+{
+        char *cmd = (char *) calloc (100, sizeof(char));
+
+        memcpy(cmd, "dot -Tpng ", strlen("dot -Tpng "));
+
+        cmd = strcat(cmd, FILENAME);
+        cmd = strcat(cmd, " > ");
+        cmd = strcat(cmd, FILENAME);
+        cmd = strcat(cmd, ".png");
+
+        system(cmd); 
+
+        free(cmd);
 }
 
 void
@@ -79,6 +108,10 @@ make_graph_dump(const list_t *list)
         }
 
         fprintf(STREAM, "}\n");
+
+        fclose(STREAM);
+
+        generate_graph();
 }
 
 void
