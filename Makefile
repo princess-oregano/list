@@ -1,7 +1,7 @@
 SRCDIR := src
 OBJDIR := obj
 
-SRC := main.cpp list.cpp dump.cpp
+SRC := main.cpp list.cpp dump.cpp log.cpp
 OBJ := $(addprefix $(OBJDIR)/, $(SRC:.cpp=.o))
 TARGET := list
 

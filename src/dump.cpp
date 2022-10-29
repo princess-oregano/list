@@ -41,18 +41,24 @@ open_graph_dump()
 static void
 generate_graph()
 {
-        char *cmd = (char *) calloc (100, sizeof(char));
+        char *cmd = (char *) calloc (200, sizeof(char));
+        char *new_filename = (char *) calloc (100, sizeof(char));
 
         memcpy(cmd, "dot -Tpng ", strlen("dot -Tpng "));
 
+        memcpy(new_filename, FILENAME, strlen(FILENAME));
+        new_filename = strcat(new_filename, ".png");
+
         cmd = strcat(cmd, FILENAME);
         cmd = strcat(cmd, " > ");
-        cmd = strcat(cmd, FILENAME);
-        cmd = strcat(cmd, ".png");
+        cmd = strcat(cmd, new_filename);
 
         system(cmd);
 
+        include_graph(new_filename);
+
         free(cmd);
+        free(new_filename);
 }
 
 void

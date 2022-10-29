@@ -9,7 +9,7 @@
 
 const int MAX_FILE_NAME_SIZE = 100;
 // Stream to print log to. Stderr by default.
-FILE *STREAM = stderr;
+FILE *LOGSTREAM = stderr;
 
 void
 log(const char *format, ...)
@@ -18,7 +18,7 @@ log(const char *format, ...)
 
         va_start(arglist, format);
 
-        vfprintf(STREAM, format, arglist);
+        vfprintf(LOGSTREAM, format, arglist);
 
         va_end(arglist);
 }
@@ -28,9 +28,9 @@ static void
 printf_start_log()
 {
         time_t rawtime;
-        struct tm * timeinfo;
-        time ( &rawtime );
-        timeinfo = localtime ( &rawtime );
+        tm *timeinfo;
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
 
         log("<pre>\n\n");
         log("<h2>LOG FILE</h2>\n\n");
@@ -52,26 +52,28 @@ print_end_log()
 }
 
 void
-open_log(char *filename)
+open_log(const char *filename)
 {
-        STREAM = fopen(filename, "w");
-        if (STREAM == nullptr) {
+        LOGSTREAM = fopen(filename, "w");
+        if (LOGSTREAM == nullptr) {
                 fprintf(stderr, "Couldn't open log file.\n");
                 return;
         }
+
+        printf_start_log();
 }
 
 FILE *
 get_logfile_ptr()
 {
-        return STREAM;
+        return LOGSTREAM;
 }
 
 void
-include_graph(char *path)
+include_graph(const char *path)
 {
         FILE *test_ptr = fopen(path, "r");
-        if (test_ptr == nullptr) {
+        if (test_ptr != nullptr) {
                 fclose(test_ptr);
         }
         else {
@@ -79,24 +81,26 @@ include_graph(char *path)
                 return;
         }
 
-        log("<img src=%s>", path);
+        log("<img src=%s width = 1200/>\n\n", path);
 }
 
 void
 close_log()
 {
-        if (STREAM != nullptr)
-                fclose(STREAM);
+        print_end_log();
+
+        if (LOGSTREAM != nullptr)
+                fclose(LOGSTREAM);
         else
-                fprintf(stderr, "Error: STREAM == nullptr.\n");
+                fprintf(stderr, "Error: LOGSTREAM == nullptr.\n");
 }
 
 void
-view_log(char *filename)
+view_log(const char *filename)
 {
         close_log();
 
-        char cmd[10+MAX_FILE_NAME_SIZE] = "firefox";
+        char cmd[10+MAX_FILE_NAME_SIZE] = "firefox ";
 
         strcat(cmd, filename);
 

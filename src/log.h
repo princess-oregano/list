@@ -1,9 +1,11 @@
-#ifdef LOG_H
+#ifndef LOG_H
 #define LOG_H
+
+#include <stdio.h>
 
 // Open log file.
 void
-open_log(char *filename)
+open_log(const char *filename);
 // Write message to log.
 void
 log(const char *format, ...);
@@ -12,13 +14,13 @@ FILE *
 get_logfile_ptr();
 // Includes graphic object into log file.
 void
-include_graph(char *path);
+include_graph(const char *path);
 // Close current log file stream.
 void
 close_log();
 // Close log file and open it in Firefox automatically.
 void
-view_log(char *filename);
+view_log(const char *filename);
 
 #endif // LOG_H
 

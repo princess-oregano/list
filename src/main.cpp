@@ -3,10 +3,12 @@
 #include "dump.h"
 #include "log.h"
 
+const char *logfile = "log.htm";
+
 int
 main()
 { 
-        open_log("log.htm");
+        open_log(logfile);
 
         list_t list {};
 
@@ -24,18 +26,13 @@ main()
         list_insert(&list, 8, 7);
         list_insert(&list, 9, 8);
 
-        for (int i = 1; i < list.cap; i++)
-                printf("logical %d - physical %d\n", i, list_find(&list, i));
-
         make_graph_dump(&list);
         list_sort(&list);
-        printf("\n\n\n");
-        for (int i = 1; i < list.cap; i++)
-                printf("logical %d - physical %d\n", i, list_find(&list, i));
 
         make_graph_dump(&list);
 
         list_dtor(&list);
 
+        view_log(logfile);
         return 0;
 }
