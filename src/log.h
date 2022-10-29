@@ -18,9 +18,6 @@ include_graph(const char *path);
 // Close current log file stream.
 void
 close_log();
-// Close log file and open it in Firefox automatically.
-void
-view_log(const char *filename);
 
 #endif // LOG_H
 

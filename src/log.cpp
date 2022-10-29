@@ -95,15 +95,3 @@ close_log()
                 fprintf(stderr, "Error: LOGSTREAM == nullptr.\n");
 }
 
-void
-view_log(const char *filename)
-{
-        close_log();
-
-        char cmd[10+MAX_FILE_NAME_SIZE] = "firefox ";
-
-        strcat(cmd, filename);
-
-        system(cmd);
-}
-

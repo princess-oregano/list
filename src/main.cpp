@@ -33,6 +33,7 @@ main()
 
         list_dtor(&list);
 
-        view_log(logfile);
+        close_log();
+
         return 0;
 }
