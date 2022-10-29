@@ -9,6 +9,8 @@
 void
 list_resize(list_t *list, int new_cap)
 {
+        assert(list);
+
         elem_t *elem_ptr = (elem_t *) realloc(list->elem,
                            ((size_t) new_cap + 1) * sizeof(elem_t));
 
@@ -45,6 +47,11 @@ list_ctor(list_t *list, int cap)
 void
 list_insert(list_t *list, data_t data, int pos)
 {
+        assert(list);
+
+        if (pos != list->elem[0].prev)
+                list->ordered = false;
+
         if (pos < 0 || pos > list->cap) {
                 fprintf(stderr, "Invalid position.\n");
                 return;
@@ -62,9 +69,27 @@ list_insert(list_t *list, data_t data, int pos)
         list->elem[list->elem[index].next].prev = index;
 }
 
+void
+list_insert_front(list_t *list, data_t data)
+{
+        list_insert(list, data, 0);
+}
+
+void
+list_insert_back(list_t *list, data_t data)
+{
+        if (list->free != list->cap)
+                list_insert(list, data, list->elem[0].prev);
+}
+
 int
 list_find(const list_t *list, int pos)
 {
+        assert(list);
+
+        if (list->ordered)
+                return pos;
+
         int index = 0;
 
         if (pos <= 0 || pos > list->cap) {
@@ -81,6 +106,11 @@ list_find(const list_t *list, int pos)
 void
 list_sort(list_t *list)
 {
+        assert(list);
+
+        if (list->ordered)
+                return;
+
         data_t *sorted_data = (data_t *) calloc((size_t) list->cap,
                                                  sizeof(data_t));
 
@@ -119,6 +149,10 @@ list_remove(list_t *list, int pos)
 {
         assert(list);
 
+        list->ordered = false;
+
+        assert(list);
+
         list->elem[list->elem[pos].prev].next = list->elem[pos].next;
         list->elem[list->elem[pos].next].prev = list->elem[pos].prev;
 
@@ -132,6 +166,8 @@ list_remove(list_t *list, int pos)
 void
 list_dtor(list_t *list)
 {
+        assert(list);
+
         list->cap = -1;
         list->free = -1;
         if (list->elem != nullptr)

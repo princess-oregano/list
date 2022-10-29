@@ -117,7 +117,7 @@ make_graph_dump(const list_t *list)
                 }
         }
 
-        if (list->free != list->cap)
+        if (list->elem[list->free].prev == -1)
                 fprintf(STREAM, "free->node%d [weight = 0, color = purple]\n", list->free);
 
         fprintf(STREAM, "}\n");

@@ -17,6 +17,7 @@ struct list_t {
         elem_t *elem = nullptr;
         int cap = 0;
         int free = 0;
+        bool ordered = true;
 };
 
 // Resizes list.
@@ -28,6 +29,12 @@ list_ctor(list_t *list, int cap);
 // Inserts element to the list after position pos.
 void
 list_insert(list_t *list, data_t data, int pos);
+// Inserts element to the list to the beginning of the list.
+void
+list_insert_front(list_t *list, data_t data);
+// Inserts element to the list to the enf of the list.
+void
+list_insert_back(list_t *list, data_t data);
 // Removes element out of list.
 void
 list_remove(list_t *list, int num);
