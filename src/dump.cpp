@@ -4,16 +4,17 @@
 #include <dirent.h>
 #include <errno.h>
 #include "dump.h"
+#include "log.h"
 
 const int FILENAME_SIZE = 100;
 
 // Stream of dump output. By default is stderr.
 FILE *STREAM = stderr;
-char FILENAME[FILENAME_SIZE] = {}; 
+char FILENAME[FILENAME_SIZE] = {};
 
-// Opens file to dump to.
+// Opens file to which graph dump will be written.
 static void
-open_dump()
+open_graph_dump()
 {
         DIR* dir = opendir("dmp");
         if (dir) {
@@ -35,7 +36,7 @@ open_dump()
         memcpy(FILENAME, filename, strlen(filename));
 }
 
-// Genetares .png image from given dot code 
+// Genetares .png image from given dot code
 // and removes source code.
 static void
 generate_graph()
@@ -49,7 +50,7 @@ generate_graph()
         cmd = strcat(cmd, FILENAME);
         cmd = strcat(cmd, ".png");
 
-        system(cmd); 
+        system(cmd);
 
         free(cmd);
 }
@@ -59,9 +60,9 @@ make_graph_dump(const list_t *list)
 {
         int i = 0;
 
-        open_dump();
+        open_graph_dump();
 
-        fprintf(STREAM, 
+        fprintf(STREAM,
         "digraph G {\n"
         "ranksep = 1.5\n"
         "graph [dpi = 100]\n"
@@ -69,12 +70,12 @@ make_graph_dump(const list_t *list)
         "{rank = min;\n"
         "above_node[label = \"Top inv\", width = 3, style = invis];\n}\n"
         "{rank = same;\n");
-        
+
         for (i = 0; i <= list->cap; i++) {
                 fprintf(STREAM,
                 "       "
                 "node%d [shape = record, "
-                "label = \"idx\\n %d | {next \\n %d | prev\\n %d} | val\\n %d\"];\n", 
+                "label = \"idx\\n %d | {next \\n %d | prev\\n %d} | val\\n %d\"];\n",
                 i, i, list->elem[i].next, list->elem[i].prev, list->elem[i].data);
         }
 
@@ -84,17 +85,17 @@ make_graph_dump(const list_t *list)
         "{rank = max;\n"
         "	below_node[label = \"Bot inv\", width = 3, style = invis];\n"
         "}\n");
-        
+
         fprintf(STREAM,
         "above_node -> node0 [style=invis];\n"
         "below_node -> node0 [style=invis];\n");
 
         for (i = 0; i < list->cap; i++) {
                 fprintf(STREAM,
-                "node%d -> ", i);        
+                "node%d -> ", i);
         }
 
-        fprintf(STREAM, 
+        fprintf(STREAM,
         "node%d [weight = 5, style = invis];\n", i);
 
         for(i = 0; i <= list->cap; i++) {
@@ -117,36 +118,36 @@ make_graph_dump(const list_t *list)
 }
 
 void
-list_dump(const list_t *list)
+make_text_dump(const list_t *list, FILE *stream)
 {
-        open_dump();
+        open_graph_dump();
 
-        fprintf(STREAM, "------------------DUMP---------------------------\n");
-        fprintf(STREAM, "Free: %d\n", list->free);
+        fprintf(stream, "------------------DUMP---------------------------\n");
+        fprintf(stream, "Free: %d\n", list->free);
 
-        fprintf(STREAM, "Index: ");
+        fprintf(stream, "Index: ");
         for (int i = 0; i <= list->cap; i++) {
-                fprintf(STREAM, "%2d ", i);
+                fprintf(stream, "%2d ", i);
         }
-        fprintf(STREAM, "\n");
+        fprintf(stream, "\n");
 
-        fprintf(STREAM, "Data:  ");
+        fprintf(stream, "Data:  ");
         for (int i = 0; i <= list->cap; i++) {
-                fprintf(STREAM, "%2d ", list->elem[i].data);
+                fprintf(stream, "%2d ", list->elem[i].data);
         }
-        fprintf(STREAM, "\n");
+        fprintf(stream, "\n");
 
-        fprintf(STREAM, "Next:  ");
+        fprintf(stream, "Next:  ");
         for (int i = 0; i <= list->cap; i++) {
-                fprintf(STREAM, "%2d ", list->elem[i].next);
+                fprintf(stream, "%2d ", list->elem[i].next);
         }
-        fprintf(STREAM, "\n");
+        fprintf(stream, "\n");
 
-        fprintf(STREAM, "Prev:  ");
+        fprintf(stream, "Prev:  ");
         for (int i = 0; i <= list->cap; i++) {
-                fprintf(STREAM, "%2d ", list->elem[i].prev);
+                fprintf(stream, "%2d ", list->elem[i].prev);
         }
-        fprintf(STREAM, "\n");
-        fprintf(STREAM, "---------------END OF DUMP-----------------------\n");
+        fprintf(stream, "\n");
+        fprintf(stream, "---------------END OF DUMP-----------------------\n");
 }
 

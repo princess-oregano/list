@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include "list.h"
 #include "dump.h"
+#include "log.h"
 
 int
 main()
-{
+{ 
+        open_log("log.htm");
+
         list_t list {};
 
         list_ctor(&list, 10);

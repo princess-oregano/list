@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "list.h"
 #include "dump.h"
+#include "log.h"
 
 void
 list_resize(list_t *list, int new_cap)
