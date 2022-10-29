@@ -81,14 +81,15 @@ list_find(const list_t *list, int pos)
 void
 list_sort(list_t *list)
 {
-        data_t sorted_index[list->cap];
-        printf("%ld", &sorted_index[list->cap] - sorted_index);
+        data_t *sorted_data = (data_t *) calloc((size_t) list->cap,
+                                                 sizeof(data_t));
+
         for (int i = 1; i < list->cap; i++) {
-                sorted_index[i] = list->elem[list_find(list, i)].data;
+                sorted_data[i] = list->elem[list_find(list, i)].data;
         }
 
         for (int i = 1; i < list->cap; i++) {
-                list->elem[i].data = sorted_index[i];
+                list->elem[i].data = sorted_data[i];
                 list->elem[i].next = i + 1;
                 if (list->elem[i].prev != -1)
                         list->elem[i].prev = i - 1;
@@ -97,8 +98,8 @@ list_sort(list_t *list)
         list->elem[list->cap].next = 0;
         if (list->elem[list->cap].prev != -1)
                 list->elem[list->cap].prev = list->cap - 1;
-        list->free = list->cap;
 
+        list->free = list->cap;
         for (int i = 1; i <= list->cap; i++) {
                 if (list->elem[i].prev == -1) {
                         list->free = i;
@@ -109,6 +110,8 @@ list_sort(list_t *list)
         list->elem[0].next = 1;
         list->elem[0].prev = list->free - 1;
         list->elem[list->free - 1].next = 0;
+
+        free(sorted_data);
 }
 
 void

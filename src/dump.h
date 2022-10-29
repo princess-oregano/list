@@ -9,7 +9,7 @@ void
 make_graph_dump(const list_t *list);
 // List dump.
 void
-make_text_dump(const list_t *list);
+make_text_dump(const list_t *list, FILE *stream);
 
 #endif // DUMP_H
 

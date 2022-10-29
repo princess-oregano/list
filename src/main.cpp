@@ -7,7 +7,7 @@ const char *logfile = "log.htm";
 
 int
 main()
-{ 
+{
         open_log(logfile);
 
         list_t list {};
@@ -21,6 +21,7 @@ main()
         list_insert(&list, 5, 4);
         list_insert(&list, 6, 5);
         list_remove(&list, 3);
+        make_graph_dump(&list);
         list_insert(&list, 10, 6);
         list_insert(&list, 7, 6);
         list_insert(&list, 8, 7);

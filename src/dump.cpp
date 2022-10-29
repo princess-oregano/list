@@ -74,7 +74,8 @@ make_graph_dump(const list_t *list)
         "graph [dpi = 100]\n"
         "splines = ortho\n"
         "{rank = min;\n"
-        "above_node[label = \"Top inv\", width = 3, style = invis];\n}\n"
+        "above_node[label = \"Top inv\", width = 3, style = invis];\n"
+        "free[label = \"FREE\", shape = rect, width = 3]}\n"
         "{rank = same;\n");
 
         for (i = 0; i <= list->cap; i++) {
@@ -115,6 +116,9 @@ make_graph_dump(const list_t *list)
                         i, list->elem[i].prev);
                 }
         }
+
+        if (list->free != list->cap)
+                fprintf(STREAM, "free->node%d [weight = 0, color = purple]\n", list->free);
 
         fprintf(STREAM, "}\n");
 
