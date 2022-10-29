@@ -31,10 +31,13 @@ list_insert(list_t *list, data_t data, int pos);
 // Removes element out of list.
 void
 list_remove(list_t *list, int num);
+// Sorts elements of the list in logical order.
+void
+list_sort(list_t *list);
 // Finds element in the list by logical position
 // excluding the zero element.
 int
-list_find(list_t *list, int pos);
+list_find(const list_t *list, int pos);
 // Destroy list.
 void
 list_dtor(list_t *list);

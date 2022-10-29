@@ -70,7 +70,7 @@ make_graph_dump(const list_t *list)
         "above_node[label = \"Top inv\", width = 3, style = invis];\n}\n"
         "{rank = same;\n");
         
-        for (i = 0; i < list->cap; i++) {
+        for (i = 0; i <= list->cap; i++) {
                 fprintf(STREAM,
                 "       "
                 "node%d [shape = record, "
@@ -89,7 +89,7 @@ make_graph_dump(const list_t *list)
         "above_node -> node0 [style=invis];\n"
         "below_node -> node0 [style=invis];\n");
 
-        for (i = 0; i < list->cap - 1; i++) {
+        for (i = 0; i < list->cap; i++) {
                 fprintf(STREAM,
                 "node%d -> ", i);        
         }
@@ -97,14 +97,16 @@ make_graph_dump(const list_t *list)
         fprintf(STREAM, 
         "node%d [weight = 5, style = invis];\n", i);
 
-        for(i = 0; i < list->cap; i++) {
-                fprintf(STREAM,
-                "node%d -> node%d [weight = 0, color=red];\n", i, list->elem[i].next);
-        }
+        for(i = 0; i <= list->cap; i++) {
+                if (list->elem[i].prev >= 0) {
+                        fprintf(STREAM,
+                        "node%d -> node%d [weight = 0, color=red];\n",
+                        i, list->elem[i].next);
 
-        for(i = 0; i < list->cap; i++) {
-                fprintf(STREAM,
-                "node%d -> node%d [weight = 0, color=blue];\n", i, list->elem[i].prev);
+                        fprintf(STREAM,
+                        "node%d -> node%d [weight = 0, color=blue];\n",
+                        i, list->elem[i].prev);
+                }
         }
 
         fprintf(STREAM, "}\n");

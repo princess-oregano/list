@@ -62,24 +62,59 @@ list_insert(list_t *list, data_t data, int pos)
 }
 
 int
-list_find(list_t *list, int pos)
+list_find(const list_t *list, int pos)
 {
-        int index = -1;
+        int index = 0;
 
         if (pos <= 0 || pos > list->cap) {
                 fprintf(stderr, "Invalid position.\n");
                 return -1;
         }
-        for (int i = 0; i < pos + 1; i++) {
-                index = list->elem[i].next;
+        for (int i = 0; i < pos; i++) {
+                index = list->elem[index].next;
         }
 
         return index;
 }
 
 void
+list_sort(list_t *list)
+{
+        data_t sorted_index[list->cap];
+        printf("%ld", &sorted_index[list->cap] - sorted_index);
+        for (int i = 1; i < list->cap; i++) {
+                sorted_index[i] = list->elem[list_find(list, i)].data;
+        }
+
+        for (int i = 1; i < list->cap; i++) {
+                list->elem[i].data = sorted_index[i];
+                list->elem[i].next = i + 1;
+                if (list->elem[i].prev != -1)
+                        list->elem[i].prev = i - 1;
+        }
+
+        list->elem[list->cap].next = 0;
+        if (list->elem[list->cap].prev != -1)
+                list->elem[list->cap].prev = list->cap - 1;
+        list->free = list->cap;
+
+        for (int i = 1; i <= list->cap; i++) {
+                if (list->elem[i].prev == -1) {
+                        list->free = i;
+                        break;
+                }
+        }
+
+        list->elem[0].next = 1;
+        list->elem[0].prev = list->free - 1;
+        list->elem[list->free - 1].next = 0;
+}
+
+void
 list_remove(list_t *list, int pos)
 {
+        assert(list);
+
         list->elem[list->elem[pos].prev].next = list->elem[pos].next;
         list->elem[list->elem[pos].next].prev = list->elem[pos].prev;
 
