@@ -6,11 +6,11 @@
 #include "dump.h"
 #include "log.h"
 
-const int FILENAME_SIZE = 100;
+const int PNGFILENAME_SIZE = 100;
 
-// Stream of dump output. By default is stderr.
-FILE *STREAM = stderr;
-char FILENAME[FILENAME_SIZE] = {};
+// Stream of dump output.
+FILE *DMP_STREAM = nullptr;
+char PNGFILENAME[PNGFILENAME_SIZE] = {}; // more specific name
 
 // Opens file to which graph dump will be written.
 static void
@@ -20,37 +20,37 @@ open_graph_dump()
         if (dir) {
                 closedir(dir);
         } else if (ENOENT == errno) {
-                system("mkdir dmp");
+                system("mkdir dmp"); // mkdir(path, mode) function
         } else {
                 fprintf(stderr, "Couldn't make a directory for dumps.\n");
         }
 
         char filename[] = "dmp/DUMP_XXXXXX";
 
-        STREAM = fdopen(mkstemp(filename), "w");
-        if (strlen(filename) >= FILENAME_SIZE) {
+        DMP_STREAM = fdopen(mkstemp(filename), "w");
+        if (strlen(filename) >= PNGFILENAME_SIZE) {
                 fprintf(stderr, "Filename is too long.\n");
                 return;
         }
 
-        memcpy(FILENAME, filename, strlen(filename));
+        memcpy(PNGFILENAME, filename, strlen(filename));
 }
 
 // Genetares .png image from given dot code
-// and removes source code.
 static void
 generate_graph()
 {
         char *cmd = (char *) calloc (200, sizeof(char));
         char *new_filename = (char *) calloc (100, sizeof(char));
+        // calloc error?
 
-        memcpy(cmd, "dot -Tpng ", strlen("dot -Tpng "));
+        memcpy(cmd, "dot -Tpng ", strlen("dot -Tpng ")); // shouldn't evaluate in runtime
 
-        memcpy(new_filename, FILENAME, strlen(FILENAME));
+        memcpy(new_filename, PNGFILENAME, strlen(PNGFILENAME));
         new_filename = strcat(new_filename, ".png");
 
-        cmd = strcat(cmd, FILENAME);
-        cmd = strcat(cmd, " > ");
+        cmd = strcat(cmd, PNGFILENAME);
+        cmd = strcat(cmd, " > ");       // runtime ?
         cmd = strcat(cmd, new_filename);
 
         system(cmd);
@@ -62,13 +62,13 @@ generate_graph()
 }
 
 void
-make_graph_dump(const list_t *list)
+make_graph_dump(const list_t *list) // naming ???
 {
         int i = 0;
 
         open_graph_dump();
 
-        fprintf(STREAM,
+        fprintf(DMP_STREAM,
         "digraph G {\n"
         "ranksep = 1.5\n"
         "graph [dpi = 100]\n"
@@ -79,50 +79,50 @@ make_graph_dump(const list_t *list)
         "{rank = same;\n");
 
         for (i = 0; i <= list->cap; i++) {
-                fprintf(STREAM,
+                fprintf(DMP_STREAM,
                 "       "
                 "node%d [shape = record, "
                 "label = \"idx\\n %d | {next \\n %d | prev\\n %d} | val\\n %d\"];\n",
                 i, i, list->elem[i].next, list->elem[i].prev, list->elem[i].data);
         }
 
-        fprintf(STREAM, "}\n");
+        fprintf(DMP_STREAM, "}\n");
 
-        fprintf(STREAM,
+        fprintf(DMP_STREAM,
         "{rank = max;\n"
         "	below_node[label = \"Bot inv\", width = 3, style = invis];\n"
         "}\n");
 
-        fprintf(STREAM,
+        fprintf(DMP_STREAM,
         "above_node -> node0 [style=invis];\n"
         "below_node -> node0 [style=invis];\n");
 
         for (i = 0; i < list->cap; i++) {
-                fprintf(STREAM,
+                fprintf(DMP_STREAM,
                 "node%d -> ", i);
         }
 
-        fprintf(STREAM,
+        fprintf(DMP_STREAM,
         "node%d [weight = 5, style = invis];\n", i);
 
         for(i = 0; i <= list->cap; i++) {
                 if (list->elem[i].prev >= 0) {
-                        fprintf(STREAM,
+                        fprintf(DMP_STREAM,
                         "node%d -> node%d [weight = 0, color=red];\n",
                         i, list->elem[i].next);
 
-                        fprintf(STREAM,
+                        fprintf(DMP_STREAM,
                         "node%d -> node%d [weight = 0, color=blue];\n",
                         i, list->elem[i].prev);
                 }
         }
 
         if (list->elem[list->free].prev == -1)
-                fprintf(STREAM, "free->node%d [weight = 0, color = purple]\n", list->free);
+                fprintf(DMP_STREAM, "free->node%d [weight = 0, color = purple]\n", list->free);
 
-        fprintf(STREAM, "}\n");
+        fprintf(DMP_STREAM, "}\n");
 
-        fclose(STREAM);
+        fclose(DMP_STREAM);
 
         generate_graph();
 }
@@ -130,8 +130,6 @@ make_graph_dump(const list_t *list)
 void
 make_text_dump(const list_t *list, FILE *stream)
 {
-        open_graph_dump();
-
         fprintf(stream, "------------------DUMP---------------------------\n");
         fprintf(stream, "Free: %d\n", list->free);
 

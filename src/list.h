@@ -5,7 +5,7 @@
 
 typedef int data_t;
 
-const char ELEM_POISON = 0x00;
+const int ELEM_POISON = 0xBE;
 
 struct elem_t {
         data_t data = 0;
@@ -17,6 +17,7 @@ struct list_t {
         elem_t *elem = nullptr;
         int cap = 0;
         int free = 0;
+        int tail = 0;
         bool ordered = true;
 };
 

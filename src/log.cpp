@@ -8,8 +8,8 @@
 #include "log.h"
 
 const int MAX_FILE_NAME_SIZE = 100;
-// Stream to print log to. Stderr by default.
-FILE *LOGSTREAM = stderr;
+// Stream to print log to.
+FILE *LOGSTREAM = nullptr;
 
 void
 log(const char *format, ...)
@@ -25,7 +25,7 @@ log(const char *format, ...)
 
 // Prints starting lines to log.
 static void
-printf_start_log()
+print_start_log()
 {
         time_t rawtime;
         tm *timeinfo;
@@ -60,7 +60,7 @@ open_log(const char *filename)
                 return;
         }
 
-        printf_start_log();
+        print_start_log();
 }
 
 FILE *

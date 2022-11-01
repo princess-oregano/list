@@ -3,7 +3,7 @@
 #include "dump.h"
 #include "log.h"
 
-const char *logfile = "log.htm";
+const char *logfile = "log.html";
 
 int
 main()
@@ -26,9 +26,14 @@ main()
         list_insert_back(&list, 7);
         list_insert_back(&list, 8);
         list_insert_back(&list, 9);
+        list_insert_back(&list, 11);
+        list_insert_back(&list, 16);
+        list_insert_back(&list, 18);
+        list_insert_back(&list, 40);
 
         make_graph_dump(&list);
         list_sort(&list);
+        make_text_dump(&list, stderr);
 
         make_graph_dump(&list);
 

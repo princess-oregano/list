@@ -29,7 +29,9 @@ list_resize(list_t *list, int new_cap)
 
         list->elem = elem_ptr;
 
-        list->cap = new_cap + 1;
+        list->elem[list->cap].next = list->cap + 1;
+
+        list->cap = new_cap;
 }
 
 void
@@ -40,7 +42,6 @@ list_ctor(list_t *list, int cap)
         list->elem[0].prev = 0;
         list->elem[0].next = 0;
 
-        list->cap = cap;
         list->free = 1;
 }
 
@@ -49,13 +50,24 @@ list_insert(list_t *list, data_t data, int pos)
 {
         assert(list);
 
+        if (list->free > list->tail)
+                list->tail++;
+
         if (pos != list->elem[0].prev)
                 list->ordered = false;
 
-        if (pos < 0 || pos > list->cap) {
+        if (pos < 0 || pos > list->tail + 1) {
                 fprintf(stderr, "Invalid position.\n");
+                fprintf(stderr, "pos = %d; tail  = %d\n", pos, list->tail);
                 return;
         }
+
+        if (pos >= list->cap - 1) {
+                list_resize(list, 2 * list->cap);
+                fprintf(stderr, "Resize.\n");
+        }
+
+        make_text_dump(list, stderr);
 
         int index = list->free;
         list->free = list->elem[list->free].next;
@@ -78,8 +90,7 @@ list_insert_front(list_t *list, data_t data)
 void
 list_insert_back(list_t *list, data_t data)
 {
-        if (list->free != list->cap)
-                list_insert(list, data, list->elem[0].prev);
+        list_insert(list, data, list->elem[0].prev);
 }
 
 int
@@ -93,7 +104,9 @@ list_find(const list_t *list, int pos)
         int index = 0;
 
         if (pos <= 0 || pos > list->cap) {
+                fprintf(stderr, "Find\n");
                 fprintf(stderr, "Invalid position.\n");
+                fprintf(stderr, "pos = %d; cap  = %d\n", pos, list->cap);
                 return -1;
         }
         for (int i = 0; i < pos; i++) {
@@ -111,14 +124,14 @@ list_sort(list_t *list)
         if (list->ordered)
                 return;
 
-        data_t *sorted_data = (data_t *) calloc((size_t) list->cap,
+        data_t *sorted_data = (data_t *) calloc((size_t) list->cap + 1,
                                                  sizeof(data_t));
 
-        for (int i = 1; i < list->cap; i++) {
+        for (int i = 1; i <= list->tail; i++) {
                 sorted_data[i] = list->elem[list_find(list, i)].data;
         }
 
-        for (int i = 1; i < list->cap; i++) {
+        for (int i = 1; i <= list->tail; i++) {
                 list->elem[i].data = sorted_data[i];
                 list->elem[i].next = i + 1;
                 if (list->elem[i].prev != -1)
@@ -149,9 +162,15 @@ list_remove(list_t *list, int pos)
 {
         assert(list);
 
-        list->ordered = false;
+        if (pos > list->tail) {
+                fprintf(stderr, "Invalid position.\n");
+                return;
+        }
 
-        assert(list);
+        if (pos != list->elem[0].prev)
+                list->ordered = false;
+        else
+                list->tail--;
 
         list->elem[list->elem[pos].prev].next = list->elem[pos].next;
         list->elem[list->elem[pos].next].prev = list->elem[pos].prev;
@@ -170,8 +189,7 @@ list_dtor(list_t *list)
 
         list->cap = -1;
         list->free = -1;
-        if (list->elem != nullptr)
-                free(list->elem);
+        free(list->elem);
 }
 
 bool
@@ -190,10 +208,17 @@ list_verify(list_t *list)
                 fprintf(stderr, "Invalid free value.\n");
                 ret_val = false;
         }
+
         if (list->elem == nullptr) {
                 fprintf(stderr, "Pointer 'elem' is null.\n");
                 ret_val = false;
         }
+
+        // prev != next
+        // prev != indx && next != indx
+        // free.prev == -1
+        // free list does not contain non-free elements
+        // 0->...->0 (if too many cycles -> leave)
 
         return ret_val;
 }
