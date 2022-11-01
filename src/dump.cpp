@@ -3,6 +3,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include "dump.h"
 #include "log.h"
 
@@ -10,7 +11,7 @@ const int PNGFILENAME_SIZE = 100;
 
 // Stream of dump output.
 FILE *DMP_STREAM = nullptr;
-char PNGFILENAME[PNGFILENAME_SIZE] = {}; // more specific name
+char PNGFILENAME[PNGFILENAME_SIZE] = {};
 
 // Opens file to which graph dump will be written.
 static void
@@ -20,7 +21,7 @@ open_graph_dump()
         if (dir) {
                 closedir(dir);
         } else if (ENOENT == errno) {
-                system("mkdir dmp"); // mkdir(path, mode) function
+                mkdir("dmp", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
         } else {
                 fprintf(stderr, "Couldn't make a directory for dumps.\n");
         }
