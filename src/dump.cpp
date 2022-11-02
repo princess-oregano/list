@@ -63,7 +63,7 @@ generate_graph()
 }
 
 void
-make_graph_dump(const list_t *list) // naming ???
+list_graph_dump(const list_t *list) // naming ???
 {
         int i = 0;
 
@@ -129,7 +129,7 @@ make_graph_dump(const list_t *list) // naming ???
 }
 
 void
-make_text_dump(const list_t *list, FILE *stream)
+list_text_dump(const list_t *list, FILE *stream)
 {
         fprintf(stream, "------------------DUMP---------------------------\n");
         fprintf(stream, "Free: %d\n", list->free);

@@ -67,7 +67,7 @@ list_insert(list_t *list, data_t data, int pos)
                 fprintf(stderr, "Resize.\n");
         }
 
-        make_text_dump(list, stderr);
+        list_text_dump(list, stderr);
 
         int index = list->free;
         list->free = list->elem[list->free].next;
@@ -214,11 +214,49 @@ list_verify(list_t *list)
                 ret_val = false;
         }
 
-        // prev != next
-        // prev != indx && next != indx
-        // free.prev == -1
-        // free list does not contain non-free elements
-        // 0->...->0 (if too many cycles -> leave)
+        int zero_count = 0;
+        for (int i = 0; i <= list->cap; i++) {
+                if (list->elem[i].prev == list->elem[i].next) {
+                        fprintf(stderr, "Index: %d, prev equals to next.\n", i);
+                        ret_val = false;
+                }
+                
+                if (list->elem[i].prev == i) {
+                        fprintf(stderr, "Index: %d, idx equals to prev.\n", i);
+                        ret_val = false;
+                }
+
+                if (list->elem[i].next == i) {
+                        fprintf(stderr, "Index: %d, idx equals to next.\n", i);
+                        ret_val = false;
+                }
+        
+                if (list->elem[i].next == 0)
+                        zero_count++;
+        }
+
+        if (zero_count > 2) {
+                fprintf(stderr, "Too many elements with next elem 0.\n");
+                ret_val = false;
+        }
+
+        int free = list->free;
+        data_t poison_data = 0;
+        memset(&poison_data, ELEM_POISON, sizeof(data_t));
+
+        for (int i = free; free != list->cap; free = list->elem[free].next) {
+                if (list->elem[i].prev != -1) {
+                        fprintf(stderr, "Prev of free elem(idx = %d)"
+                                        " is not -1.\n", i);
+                        ret_val = false;
+                }
+
+                if (list->elem[i].data != poison_data) {
+                        fprintf(stderr, "Data of free elem(idx = %d)"
+                                        " is not poison.\n", i);
+                        ret_val = false;
+                }
+        }
 
         return ret_val;
 }

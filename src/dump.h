@@ -6,10 +6,10 @@
 
 // Write a graphviz interpretation of dump to a file.
 void
-make_graph_dump(const list_t *list);
+list_graph_dump(const list_t *list);
 // List dump.
 void
-make_text_dump(const list_t *list, FILE *stream);
+list_text_dump(const list_t *list, FILE *stream);
 
 #endif // DUMP_H
 

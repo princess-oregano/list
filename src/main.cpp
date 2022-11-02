@@ -21,7 +21,8 @@ main()
         list_insert_back(&list, 5);
         list_insert_back(&list, 6);
         list_remove(&list, 3);
-        make_graph_dump(&list);
+        list_verify(&list);
+        list_graph_dump(&list);
         list_insert_back(&list, 10);
         list_insert_back(&list, 7);
         list_insert_back(&list, 8);
@@ -31,11 +32,11 @@ main()
         list_insert_back(&list, 18);
         list_insert_back(&list, 40);
 
-        make_graph_dump(&list);
+        list_graph_dump(&list);
         list_sort(&list);
-        make_text_dump(&list, stderr);
+        list_text_dump(&list, stderr);
 
-        make_graph_dump(&list);
+        list_graph_dump(&list);
 
         list_dtor(&list);
 
